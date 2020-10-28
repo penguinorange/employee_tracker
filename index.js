@@ -4,6 +4,7 @@ const inquirer = require("inquirer");
 
 const connection = mysql.createConnection({
     host: "localhost",
+    port: 3306,
     // Your username
     user: "root",
     // Your password
@@ -18,6 +19,7 @@ connection.connect();
 connection.query = util.promisify(connection.query);
 
 function mainPrompts() {
+
     inquirer.prompt([{
         type: "list",
         name: "choice",
@@ -105,9 +107,50 @@ async function addDepartments() {
     await connection.query("INSERT INTO department SET ?", department);
     console.log(`Added ${department.name} to the database`);
     mainPrompts();
-};
+}
 
 function displayRoles() {
+    console.log("\n");
+    connection.query("SELECT * FROM role").then(response => {
+        console.table(response);
+        mainPrompts();
+    })
+}
+
+// async/await method
+async function addRoles() {
+    const role = await inquirer.prompt([
+        {
+            type: "input",
+            name: "title",
+            message: "What is the title of the role?"
+        },
+        {
+            type: "input",
+            name: "salary",
+            message: "What is the salary for this role?"
+        },
+        {
+            type: "input",
+            name: "department_id",
+            message: "Please enter the department ID for this role",
+            validate: answer => {
+                const pass = answer.match(
+                    /^[1-9]\d*$/
+                );
+                if (pass) {
+                    return true;
+                }
+                return "You must enter a number";
+            }
+        }
+    ]);
+    await connection.query("INSERT INTO role SET ?", role);
+    console.log(`Added ${role.name} to the database`);
+    mainPrompts();
+}
+
+function displayEmployees() {
     console.log("\n");
     connection.query("SELECT * FROM employee").then(response => {
         console.table(response);
@@ -116,29 +159,52 @@ function displayRoles() {
 }
 
 // async/await method
-async function addRoles() {
-    const roles = await inquirer.prompt([
-        {
-            name: "title",
-            message: "What is the title of the role?"
-        }
-    ]);
-    await connection.query("INSERT INTO role SET ?", role);
-    console.log(`Added ${role.name} to the database`);
-    mainPrompts();
-};
-
-function displayEmployees() {
-    console.log("\n");
-    connection.query("SELECT * FROM employees").then(response => {
-        console.table(response);
-        mainPrompts();
-    })
-}
-
-// async/await method
 async function addEmployees() {
     const employee = await inquirer.prompt([
+        {
+            name: "first_name",
+            message: "What is the first name of this employee?"
+        },
+        {
+            name: "last_name",
+            message: "What is the last name of this employee?"
+        },
+        {
+            name: "role_id",
+            message: "What is this employee's ID number?",
+            validate: answer => {
+                const pass = answer.match(
+                    /^[1-9]\d*$/
+                );
+                if (pass) {
+                    return true;
+                }
+                return "You must enter a number";
+            }
+        },
+        {
+            name: "manager_id",
+            message: "What is this employee's manager ID number?",
+            validate: answer => {
+                const pass = answer.match(
+                    /^[1-9]\d*$/
+                );
+                if (pass) {
+                    return true;
+                }
+                return "You must enter a number";
+            }
+        }
+    ]);
+    await connection.query("INSERT INTO employee SET ?", employee);
+    console.log(`Added ${employee.name} to the database`);
+    mainPrompts();
+}
+
+
+
+async function updateEmployRole() {
+    const employeeUpdate = await inquirer.prompt([
         {
             name: "name",
             message: "What is the name of this employee?"
@@ -149,17 +215,5 @@ async function addEmployees() {
     mainPrompts();
 };
 
-// async function updateEmployRole() {
-//     const employeeUpdate = await inquirer.prompt([
-//         {
-//             name: "name",
-//             message: "What is the name of this employee?"
-//         }
-//     ]);
-//     await connection.query("INSERT INTO employee SET ?", employee);
-//     console.log(`Added ${employee.name} to the database`);
-//     mainPrompts();
-// };
-
-
+mainPrompts();
 
