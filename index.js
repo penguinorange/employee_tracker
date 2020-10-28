@@ -68,7 +68,7 @@ function mainPrompts() {
                 displayRoles();
                 break;
             case "ADD_ROLES":
-                addRoless();
+                addRoles();
                 break;
             case "VIEW_EMPLOYEES":
                 displayEmployees();
@@ -93,4 +93,73 @@ function displayDepartments() {
         mainPrompts();
     })
 }
+
+// async/await method
+async function addDepartments() {
+    const department = await inquirer.prompt([
+        {
+            name: "name",
+            message: "What is the name of the department?"
+        }
+    ]);
+    await connection.query("INSERT INTO department SET ?", department);
+    console.log(`Added ${department.name} to the database`);
+    mainPrompts();
+};
+
+function displayRoles() {
+    console.log("\n");
+    connection.query("SELECT * FROM employee").then(response => {
+        console.table(response);
+        mainPrompts();
+    })
+}
+
+// async/await method
+async function addRoles() {
+    const roles = await inquirer.prompt([
+        {
+            name: "title",
+            message: "What is the title of the role?"
+        }
+    ]);
+    await connection.query("INSERT INTO role SET ?", role);
+    console.log(`Added ${role.name} to the database`);
+    mainPrompts();
+};
+
+function displayEmployees() {
+    console.log("\n");
+    connection.query("SELECT * FROM employees").then(response => {
+        console.table(response);
+        mainPrompts();
+    })
+}
+
+// async/await method
+async function addEmployees() {
+    const employee = await inquirer.prompt([
+        {
+            name: "name",
+            message: "What is the name of this employee?"
+        }
+    ]);
+    await connection.query("INSERT INTO employee SET ?", employee);
+    console.log(`Added ${employee.name} to the database`);
+    mainPrompts();
+};
+
+// async function updateEmployRole() {
+//     const employeeUpdate = await inquirer.prompt([
+//         {
+//             name: "name",
+//             message: "What is the name of this employee?"
+//         }
+//     ]);
+//     await connection.query("INSERT INTO employee SET ?", employee);
+//     console.log(`Added ${employee.name} to the database`);
+//     mainPrompts();
+// };
+
+
 
