@@ -146,7 +146,7 @@ async function addRoles() {
         }
     ]);
     await connection.query("INSERT INTO role SET ?", role);
-    console.log(`Added ${role.name} to the database`);
+    console.log(`Added ${role.title} to the database`);
     mainPrompts();
 }
 
@@ -206,12 +206,48 @@ async function addEmployees() {
 async function updateEmployRole() {
     const employeeUpdate = await inquirer.prompt([
         {
-            name: "name",
-            message: "What is the name of this employee?"
+            name: "id",
+            message: "Please select an employee by ID number",
+            validate: answer => {
+                const pass = answer.match(
+                    /^[1-9]\d*$/
+                );
+                if (pass) {
+                    return true;
+                }
+                return "You must enter a number";
+            }
+        },
+        {
+            name: "role_id",
+            message: "Please enter the new role ID number for their update",
+            validate: answer => {
+                const pass = answer.match(
+                    /^[1-9]\d*$/
+                );
+                if (pass) {
+                    return true;
+                }
+                return "You must enter a number";
+            }
         }
     ]);
-    await connection.query("INSERT INTO employee SET ?", employee);
-    console.log(`Added ${employee.name} to the database`);
+    // const employUpdate = employeeUpdate.map(v => parseInt(v, 10));
+    // console.log(employUpdate)
+    console.log(employeeUpdate)
+    var arr = [];
+for (var i = 0; i < employeeUpdate.length; i++) {
+    arr.push(employeeUpdate[i].value);
+}
+    console.log(arr)
+
+
+
+
+    // console.log(Object.entries(employeeUpdate))
+    // await connection.query("UPDATE employee SET role_id = ? WHERE id = ?", employUpdate);
+    // console.log(parseInt(employeeUpdate))
+    console.log(`Updated employee #${employeeUpdate.id} to the database`);
     mainPrompts();
 };
 
